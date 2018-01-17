@@ -4,7 +4,7 @@ from scipy.optimize import curve_fit
 import h5py
 from os import walk
 
-import Blobfinder
+#import Blobfinder
 
 import fit_tools
 reload(fit_tools)
