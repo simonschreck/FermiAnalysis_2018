@@ -4,7 +4,7 @@ from scipy.optimize import curve_fit
 import h5py
 from os import walk
 
-#import Blobfinder
+import Blobfinder
 
 import fit_tools
 reload(fit_tools)
@@ -156,7 +156,7 @@ def get_ms(h5file) :
     return tof_all, n_counts 
     
 
-def get_FEL_Spectrum_Calib(file_names, load_path, harm):
+def get_FEL_Spectrum_Calib(file_names, load_path, harm, debug, num_delays):
     '''
     Loads and returns the FEL spectrum and calibrated energy
     '''
@@ -173,6 +173,10 @@ def get_FEL_Spectrum_Calib(file_names, load_path, harm):
     
     # Loop over files supplied in file_names
     for j in range(len(file_names)):
+        
+        # If debugging / testing: do only first num_delays delay files
+        if debug == True and j > num_delays : break
+        
         try :
             h5file = h5py.File(load_path+file_names[j], 'r')
         except IOError :
@@ -267,7 +271,7 @@ def correct_FEL_spectrum(Int_FEL_spectrum, Max_Ind_Avg, Peak_Width = 50, Bcg_Wid
     return Int_FEL_spectrum_corr
 
 
-def get_i0(file_names, load_path, harm, Peak_Width = 50, Bcg_Width = 10, get_FELstats = False):
+def get_i0(file_names, load_path, harm, Peak_Width = 50, Bcg_Width = 10, get_FELstats = False, debug = False, num_delays = 2):
     '''
     Loads and corrects the FEL spectrum.
     Correction includes the subtraction of a backrgound estimated over the 
@@ -275,7 +279,7 @@ def get_i0(file_names, load_path, harm, Peak_Width = 50, Bcg_Width = 10, get_FEL
     Returns the i0 of each shot and the FEL spectrum averaged over shots
     '''
     
-    FEL_intensity, FEL_Energy = get_FEL_Spectrum_Calib(file_names, load_path, harm)
+    FEL_intensity, FEL_Energy = get_FEL_Spectrum_Calib(file_names, load_path, harm, debug, num_delays)
     
     FEL_intensity = np.array(FEL_intensity,dtype=float) # change type to float
     n_shots = FEL_intensity.shape[0]
