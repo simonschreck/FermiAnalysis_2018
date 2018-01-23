@@ -4,7 +4,7 @@ from scipy.optimize import curve_fit
 import h5py
 from os import walk
 
-#import Blobfinder
+import Blobfinder
 
 import fit_tools
 reload(fit_tools)
@@ -96,6 +96,17 @@ def get_XAS_intensity(h5file,thr = 0):
     XAS_image[XAS_image<thr]=0
     XAS_int = np.sum(np.sum(XAS_image,axis=1),axis=1)
     return XAS_int
+    
+    
+def get_Basler_intensity(h5file, Basler, thr = 20):
+    '''
+    Load the integrated intensity of a Basler camera, applies a threshold (thr, default thr = 20) before integrating
+    '''
+    Image = h5file['/Laser/'+Basler].value
+    Image = Image[:, 20:-20, 20:-20]
+    Image[Image < thr]=0
+    Int = np.sum(np.sum(Image,axis=1),axis=1)
+    return Int
     
     
 def get_Basler_blobs(h5file, Basler, clustersize = 5, threshold = 8):
