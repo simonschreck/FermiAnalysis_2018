@@ -4,7 +4,7 @@ from scipy.optimize import curve_fit
 import h5py
 from os import walk
 
-import Blobfinder
+#import Blobfinder
 
 import fit_tools
 reload(fit_tools)
@@ -108,7 +108,28 @@ def get_Basler_intensity(h5file, Basler, thr = 20):
     Int = np.sum(np.sum(Image,axis=1),axis=1)
     return Int
     
+
+def get_Basler_projection(h5file, Basler, curv_file) :
+    '''
+    Load all Basler images projected onto the dispersive direction.
+    '''
     
+    # Load the curvature
+    h5_curve = h5py.File(curv_file, 'r')
+    p_curv = h5_curve['popt'].value
+    
+    # Load the images
+    xes_images = h5file['/Laser/' + Basler].value
+    
+    # Curvature correction for each immage and projecting corrected image to get spectrum
+    xes_spec = []
+    for k in np.arange(np.shape(xes_images)[0]) :
+        xes_images[k, :, :] = CurvCorr_XES_image(xes_images[k, :, :], p_curv)
+        xes_spec.extend(np.sum(xes_images[k, :, :], axis = 0))
+        
+    return xes_spec
+
+
 def get_Basler_blobs(h5file, Basler, clustersize = 5, threshold = 8):
     '''
     Does blob fining on the Basler images and returns coordinates of the blobs and number of blobs per shot
