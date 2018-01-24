@@ -121,6 +121,8 @@ def get_Basler_projection(h5file, Basler, curv_file) :
     # Load the images
     xes_images = h5file['/Laser/' + Basler].value
     
+    xes_images = xes_images[:, 20:-20, 20:-20]
+    
     # Curvature correction for each immage and projecting corrected image to get spectrum
     xes_spec = []
     for k in np.arange(np.shape(xes_images)[0]) :
