@@ -4,7 +4,7 @@ from scipy.optimize import curve_fit
 import h5py
 from os import walk
 
-#import Blobfinder
+import Blobfinder
 
 import fit_tools
 reload(fit_tools)
@@ -74,7 +74,7 @@ def getHarm(run, run_type, bt) :
         Harm = 60
     elif bt == 2 :
         if run_type == 'XAS' :
-            if run in np.concatenate([np.arange(0, 23+1), np.arange(30, 35+1)]) :
+            if run in np.concatenate([np.arange(0, 23+1), np.arange(30, 35+1), 99]) :
                 Harm = 60
             else :
                 Harm = 55
@@ -117,6 +117,7 @@ def get_Basler_projection(h5file, Basler, curv_file) :
     # Load the curvature
     h5_curve = h5py.File(curv_file, 'r')
     p_curv = h5_curve['popt'].value
+    h5_curve.close()
     
     # Load the images
     xes_images = h5file['/Laser/' + Basler].value
@@ -154,7 +155,9 @@ def get_Basler_blobs(h5file, Basler, clustersize = 5, threshold = 8):
 
 
     for k in np.arange(n_shots):
-        one_Image = Images[k, 20:-20, 20:-20]
+        #one_Image = Images[k, 20:-20, 20:-20]
+        one_Image = np.array(Images[k, 20:-20, 20:-20], order='C')
+        
         [x_pos,y_pos,num,integ]= Blobfinder.getBlobs(blobfind_params, one_Image)
         
         blobs_x.extend(x_pos)
@@ -427,6 +430,7 @@ def CurvCorr_XES_image(image_raw, p_curv):
     return image_cor
 
 def pix2eV(pix, p_disp) :
+
     return line(pix, p_disp[0], p_disp[1])
     
     
