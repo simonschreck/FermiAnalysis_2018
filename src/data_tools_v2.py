@@ -74,7 +74,7 @@ def getHarm(run, run_type, bt) :
         Harm = 60
     elif bt == 2 :
         if run_type == 'XAS' :
-            if run in np.concatenate([np.arange(0, 23+1), np.arange(30, 35+1), 99]) :
+            if run in np.concatenate([np.arange(0, 23+1), np.arange(30, 35+1), [99]]) :
                 Harm = 60
             else :
                 Harm = 55
