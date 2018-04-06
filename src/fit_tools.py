@@ -25,11 +25,11 @@ def exponential(x,a,b,c):
 def poly2(x, a, b, c):
     return a*x**2 + b*x + c
 
-def fit(function,x,y,p0=None,sigma=None,bounds=None):
+def fit(function,x,y,p0=None,sigma=None,bounds=(-np.inf, np.inf)):
     '''
     fits a function and return the fit resulting parameters and curve
     '''
-    popt,pcov = curve_fit(function,x,y,p0=p0,sigma=sigma)
+    popt,pcov = curve_fit(function,x,y,p0=p0,sigma=sigma, bounds=bounds)
     #x = np.arange(0,1e4)
     curve = function(x,*popt)
     perr = np.sqrt(np.diag(pcov))
@@ -112,5 +112,34 @@ def gauss_int(x, a, t0, sig, o) :
     for i in np.arange(len(x)) :
         result[i] = scipy.integrate.quad(lambda x: gauss2(x, t0, sig), -np.inf, x[i])[0]
     return o + result / np.mean(np.max(result)) * a
+
+
+def gauss_int_0(x, a, t0, sig) :   
+    result = np.zeros(len(x))
+    for i in np.arange(len(x)) :
+        result[i] = scipy.integrate.quad(lambda x: gauss2(x, t0, sig), -np.inf, x[i])[0]
+    return result / np.mean(np.max(result)) * a
+
+def gauss_int_0_2(x, a1, t01, sig1, a2, t02, sig2) :   
+    result1 = np.zeros(len(x))
+    result2 = np.zeros(len(x))
+    for i in np.arange(len(x)) :
+        result1[i] = scipy.integrate.quad(lambda x: gauss2(x, t01, sig1), -np.inf, x[i])[0]
+    for i in np.arange(len(x)) :
+        result2[i] = scipy.integrate.quad(lambda x: gauss2(x, t02, sig2), -np.inf, x[i])[0]
+    
+    return result1 / np.mean(np.max(result1)) * a1 + result2 / np.mean(np.max(result2)) * a2
+
+
+
+
+
+
+
+
+
+
+
+
 
 

@@ -4,7 +4,7 @@ from scipy.optimize import curve_fit
 import h5py
 from os import walk
 
-import Blobfinder
+#import Blobfinder
 
 import fit_tools
 reload(fit_tools)
@@ -109,7 +109,7 @@ def get_Basler_intensity(h5file, Basler, thr = 20):
     return Int
     
 
-def get_Basler_projection(h5file, Basler, curv_file) :
+def get_Basler_projection(h5file, Basler, curv_file, thr = 20) :
     '''
     Load all Basler images projected onto the dispersive direction.
     '''
@@ -123,6 +123,7 @@ def get_Basler_projection(h5file, Basler, curv_file) :
     xes_images = h5file['/Laser/' + Basler].value
     
     xes_images = xes_images[:, 20:-20, 20:-20]
+    xes_images[xes_images < thr] = 0
     
     # Curvature correction for each immage and projecting corrected image to get spectrum
     xes_spec = []
